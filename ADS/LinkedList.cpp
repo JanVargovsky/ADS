@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 
 template <typename T>
 class LinkedList
@@ -51,6 +52,7 @@ public:
 	void insertAt(T item, size_t index);
 	T remove(size_t index);
 	void clear();
+	void clear(std::function<void(T&)> func);
 
 	// iterators
 	iterator begin() { return iterator(this->head); }
@@ -154,10 +156,27 @@ template<typename T>
 void LinkedList<T>::clear()
 {
 	auto current = head;
+	if (current != nullptr)
+		while (current->Next != nullptr)
+		{
+			auto next = current->Next;
+			delete current;
+			current = next;
+		}
+	head = nullptr;
+}
+
+template<typename T>
+void LinkedList<T>::clear(std::function<void(T&)> func)
+{
+	auto current = head;
 	while (current->Next != nullptr)
 	{
 		auto next = current->Next;
+		if (func)
+			func(current->Value);
 		delete current;
 		current = next;
 	}
+	head = nullptr;
 }
